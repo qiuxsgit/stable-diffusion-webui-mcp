@@ -35,5 +35,8 @@ COPY --from=builder /app/stable-diffusion-webui-mcp .
 # 暴露端口
 EXPOSE 18080
 
+# 环境变量
+ENV SDWEBUI_URL="http://127.0.0.1:7860"
+
 # 运行应用，使用固定端口
-CMD ["./stable-diffusion-webui-mcp", "-port", ":18080"]
+CMD ["./stable-diffusion-webui-mcp", "-port", ":18080", "-sdwebui-url", "${SDWEBUI_URL}"]
