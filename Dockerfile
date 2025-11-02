@@ -40,4 +40,4 @@ ENV SDWEBUI_URL="http://127.0.0.1:7860"
 
 # 运行应用，使用固定端口
 # CMD ["./stable-diffusion-webui-mcp", "-port", ":18080", "-sdwebui-url", "${SDWEBUI_URL}"]
-CMD ./stable-diffusion-webui-mcp -port 18080 -sdwebui-url ${SDWEBUI_URL}
+CMD ./stable-diffusion-webui-mcp -port ":18080" -sdwebui-url ${SDWEBUI_URL}
