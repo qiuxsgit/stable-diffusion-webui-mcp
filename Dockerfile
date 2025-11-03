@@ -42,4 +42,5 @@ EXPOSE 18080
 ENV SDWEBUI_URL="http://127.0.0.1:7860"
 ENV SERVER_URL="http://127.0.0.1:18080"
 
+CMD export GIN_MODE=release
 CMD ./stable-diffusion-webui-mcp -port ":18080" -sdwebui-url ${SDWEBUI_URL} -server-url ${SERVER_URL}
