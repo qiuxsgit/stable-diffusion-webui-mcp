@@ -30,7 +30,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app/
 
 # 创建图片保存目录
-RUN makedir /app/images
+RUN mkdir -p /app/images
 
 # 从构建阶段复制编译好的二进制文件
 COPY --from=builder /app/stable-diffusion-webui-mcp .
