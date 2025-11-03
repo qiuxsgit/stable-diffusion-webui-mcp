@@ -65,7 +65,7 @@ func (h *McpHandler) textToImage(ctx context.Context, arg sdwebui.TextToImageReq
 	for _, imageUrl := range response.Images {
 		contents = append(contents, MCPContent{
 			Type: "text",
-			Data: imageUrl,
+			Text: imageUrl,
 		})
 	}
 

@@ -52,7 +52,7 @@ func (s *FileService) SaveImage(base64Data string) (string, error) {
 		return "", fmt.Errorf("保存图片文件失败: %v", err)
 	}
 
-	fileUrl := fmt.Sprintf("%s/%s", s.serverUrl, fileName)
+	fileUrl := fmt.Sprintf("%s/api/v1/read/file/%s", s.serverUrl, fileName)
 	logrus.Infof("fileUrl: %s", fileUrl)
 
 	return fileUrl, nil
