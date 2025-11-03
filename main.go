@@ -32,7 +32,7 @@ func main() {
 
 	fileService := internal.NewFileService(imageSavePath, serverUrlNoSuffix)
 
-	sdwebuiService := sdwebui.NewSdwebuiService(serverUrlNoSuffix, fileService)
+	sdwebuiService := sdwebui.NewSdwebuiService(sdwebuiUrl, fileService)
 
 	apiHandler := NewApiHandler(fileService)
 	appService := NewAppService(sdwebuiService, apiHandler)
