@@ -72,12 +72,16 @@ func setupRoutes(appService *AppService) *gin.Engine {
 
 	setupSseEndpoints(appService, router)
 
+	setupApiV1(appService, router)
+
+	return router
+}
+
+func setupApiV1(appService *AppService, router *gin.Engine) {
 	apiV1Group := router.Group("/api/v1")
 	{
 		apiV1Group.GET("/read/file/:fileName", appService.apiHandler.readFile)
 	}
-
-	return router
 }
 
 func setupStreamableHttpHandler(appService *AppService, router *gin.Engine) {
