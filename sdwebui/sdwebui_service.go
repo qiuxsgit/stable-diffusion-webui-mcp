@@ -8,16 +8,20 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"qiuxs.com/stable-diffusion-webui-mcp/internal"
 )
 
 type SdwebuiService struct {
-	baseUrl string
-	client  *http.Client
+	baseUrl     string
+	fileService *internal.FileService
+	client      *http.Client
 }
 
-func NewSdwebuiService(sdwebuiUrl string) *SdwebuiService {
+func NewSdwebuiService(sdwebuiUrl string, fileService *internal.FileService) *SdwebuiService {
 	return &SdwebuiService{
-		baseUrl: sdwebuiUrl,
+		baseUrl:     sdwebuiUrl,
+		fileService: fileService,
 		client: &http.Client{
 			Timeout: 300 * time.Second, // 5分钟超时，因为图片生成可能需要较长时间
 		},
@@ -87,6 +91,19 @@ func (s *SdwebuiService) TextToImage(ctx context.Context, arg TextToImageRequest
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, fmt.Errorf("解析响应JSON失败: %v", err)
 	}
+
+	// 保存生成的图片
+	var fileUrls []string
+	for _, imageData := range response.Images {
+		fileUrl, err := s.fileService.SaveImage(imageData)
+		if err != nil {
+			return nil, fmt.Errorf("保存图片失败: %v", err)
+		}
+		fileUrls = append(fileUrls, fileUrl)
+	}
+
+	// 将保存的图片路径添加到响应中
+	response.Images = fileUrls
 
 	return &response, nil
 }

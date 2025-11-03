@@ -62,21 +62,11 @@ func (h *McpHandler) textToImage(ctx context.Context, arg sdwebui.TextToImageReq
 	}
 
 	// 添加生成的图片
-	for i, imageData := range response.Images {
+	for _, imageUrl := range response.Images {
 		contents = append(contents, MCPContent{
-			Type:     "image",
-			MimeType: "image/png",
-			Data:     imageData,
+			Type: "text",
+			Data: imageUrl,
 		})
-
-		// 只显示前3张图片的信息，避免内容过多
-		if i >= 2 && len(response.Images) > 3 {
-			contents = append(contents, MCPContent{
-				Type: "text",
-				Text: fmt.Sprintf("... 还有 %d 张图片", len(response.Images)-3),
-			})
-			break
-		}
 	}
 
 	return &MCPToolResult{

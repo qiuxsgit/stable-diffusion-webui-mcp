@@ -25,7 +25,7 @@ type TextToImageRequest struct {
 }
 
 type TextToImageResponse struct {
-	Images     []string               `json:"images" jsonschema:"生成的图片列表,生成的图片列表（base64编码）"`
+	Images     []string               `json:"images" jsonschema:"生成的图片列表,生成的图片列表（图片url）"`
 	Parameters map[string]interface{} `json:"parameters" jsonschema:"生成参数,生成参数信息"`
 	Info       string                 `json:"info" jsonschema:"生成信息,详细的生成信息"`
 }

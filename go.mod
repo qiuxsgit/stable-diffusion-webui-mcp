@@ -6,6 +6,7 @@ toolchain go1.24.9
 
 require (
 	github.com/gin-gonic/gin v1.11.0
+	github.com/google/uuid v1.6.0
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/sirupsen/logrus v1.9.3
 )

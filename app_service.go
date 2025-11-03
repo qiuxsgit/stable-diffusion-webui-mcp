@@ -21,6 +21,7 @@ type AppService struct {
 	httpServer     *http.Server
 	mcpServer      *mcp.Server
 	mcpHandler     *McpHandler
+	apiHandler     *ApiHandler
 }
 
 const BASE_MCP_PATH = "/mcp"
@@ -61,7 +62,6 @@ func (s *AppService) Start(port string) error {
 }
 
 func setupRoutes(appService *AppService) *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -71,6 +71,11 @@ func setupRoutes(appService *AppService) *gin.Engine {
 	setupStreamableHttpHandler(appService, router)
 
 	setupSseEndpoints(appService, router)
+
+	apiV1Group := router.Group("/api/v1")
+	{
+		apiV1Group.GET("/read/file/:fileName", appService.apiHandler.readFile)
+	}
 
 	return router
 }
@@ -100,10 +105,11 @@ func setupSseEndpoints(appService *AppService, router *gin.Engine) {
 	router.Any("/sse/*path", gin.WrapH(sseMcpHandler))
 }
 
-func NewAppService(sdwebuiService *sdwebui.SdwebuiService) *AppService {
+func NewAppService(sdwebuiService *sdwebui.SdwebuiService, apiHandler *ApiHandler) *AppService {
 	appService := &AppService{
 		sdwebuiService: sdwebuiService,
 		mcpHandler:     NewMcpHandler(sdwebuiService),
+		apiHandler:     apiHandler,
 	}
 
 	appService.mcpServer = InitMCPServer(appService)

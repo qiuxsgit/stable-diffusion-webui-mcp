@@ -37,7 +37,6 @@ EXPOSE 18080
 
 # 环境变量
 ENV SDWEBUI_URL="http://127.0.0.1:7860"
+ENV SERVER_URL="http://127.0.0.1:18080"
 
-# 运行应用，使用固定端口
-# CMD ["./stable-diffusion-webui-mcp", "-port", ":18080", "-sdwebui-url", "${SDWEBUI_URL}"]
-CMD ./stable-diffusion-webui-mcp -port ":18080" -sdwebui-url ${SDWEBUI_URL}
+CMD ./stable-diffusion-webui-mcp -port ":18080" -sdwebui-url ${SDWEBUI_URL} -server-url ${SERVER_URL}
