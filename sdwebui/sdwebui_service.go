@@ -52,8 +52,32 @@ func (s *SdwebuiService) TextToImage(ctx context.Context, arg TextToImageRequest
 		arg.NIter = 1
 	}
 
-	// 准备请求体
-	requestBody, err := json.Marshal(arg)
+	// 准备请求体（兼容 ControlNet 在 WebUI 1.10.1 中的 alwayson_scripts.controlnet.args 写法）
+	var requestBody []byte
+	var err error
+	if arg.ControlNetEnabled && len(arg.ControlNetUnits) > 0 {
+		// 将结构体转为通用 map 以便注入 alwayson_scripts 结构
+		rawBytes, marshalErr := json.Marshal(arg)
+		if marshalErr != nil {
+			return nil, fmt.Errorf("序列化请求参数失败: %v", marshalErr)
+		}
+		var body map[string]interface{}
+		if unmarshalErr := json.Unmarshal(rawBytes, &body); unmarshalErr != nil {
+			return nil, fmt.Errorf("构建请求体失败: %v", unmarshalErr)
+		}
+		// 构建 alwayson_scripts.controlnet.args
+		alwaysOn, _ := body["alwayson_scripts"].(map[string]interface{})
+		if alwaysOn == nil {
+			alwaysOn = map[string]interface{}{}
+		}
+		alwaysOn["controlnet"] = map[string]interface{}{
+			"args": arg.ControlNetUnits,
+		}
+		body["alwayson_scripts"] = alwaysOn
+		requestBody, err = json.Marshal(body)
+	} else {
+		requestBody, err = json.Marshal(arg)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("序列化请求参数失败: %v", err)
 	}
