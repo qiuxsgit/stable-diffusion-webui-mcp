@@ -80,7 +80,7 @@ func setupRoutes(appService *AppService) *gin.Engine {
 func setupApiV1(appService *AppService, router *gin.Engine) {
 	apiV1Group := router.Group("/api/v1")
 	{
-		apiV1Group.GET("/read/file/:fileName", appService.apiHandler.readFile)
+		apiV1Group.GET("/read/file/*filePath", appService.apiHandler.readFile)
 	}
 }
 

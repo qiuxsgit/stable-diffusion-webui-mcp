@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -34,10 +36,14 @@ func (s *FileService) SaveImage(base64Data string) (string, error) {
 
 	// 创建文件名
 	fileName := fmt.Sprintf("%s.png", fileID.String())
-	filePath := filepath.Join(s.fileSavePath, fileName)
+	// 生成日期文件夹（yyyy-MM-dd格式）
+	dateFolder := time.Now().Format("2006-01-02")
+	// 构建完整路径，包含日期文件夹
+	filePath := filepath.Join(s.fileSavePath, dateFolder, fileName)
 
-	// 确保目录存在
-	if err := os.MkdirAll(s.fileSavePath, 0755); err != nil {
+	// 确保目录存在（包括日期文件夹）
+	dateDir := filepath.Join(s.fileSavePath, dateFolder)
+	if err := os.MkdirAll(dateDir, 0755); err != nil {
 		return "", fmt.Errorf("创建目录失败: %v", err)
 	}
 
@@ -52,18 +58,21 @@ func (s *FileService) SaveImage(base64Data string) (string, error) {
 		return "", fmt.Errorf("保存图片文件失败: %v", err)
 	}
 
-	fileUrl := fmt.Sprintf("%s/api/v1/read/file/%s", s.serverUrl, fileName)
+	// 构建相对路径用于URL（日期文件夹/文件名），使用path包确保URL使用正斜杠
+	relativePath := path.Join(dateFolder, fileName)
+	fileUrl := fmt.Sprintf("%s/api/v1/read/file/%s", s.serverUrl, relativePath)
 	logrus.Infof("fileUrl: %s", fileUrl)
 
 	return fileUrl, nil
 }
 
-func (s *FileService) ReadFile(fileName string) (*os.File, error) {
-	if strings.Contains(fileName, "..") {
-		return nil, errors.New("file name contains invalid characters")
+func (s *FileService) ReadFile(filePath string) (*os.File, error) {
+	if strings.Contains(filePath, "..") {
+		return nil, errors.New("file path contains invalid characters")
 	}
-	filePath := s.fileSavePath + "/" + fileName
-	file, err := os.Open(filePath)
+	// 使用filepath.Join安全地拼接路径，支持日期文件夹/文件名的格式
+	fullPath := filepath.Join(s.fileSavePath, filePath)
+	file, err := os.Open(fullPath)
 	if err != nil {
 		return nil, err
 	}
